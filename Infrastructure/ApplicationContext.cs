@@ -14,6 +14,19 @@ namespace Infrastructure
         public ApplicationContext(DbContextOptions options)
             : base(options)
         {
-        }     
+        }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder) 
+        {
+            modelBuilder.Entity<Order>()
+                .HasOne<Customer>()
+                .WithMany();
+
+            modelBuilder.Entity<Order>()
+               .HasOne<Product>()
+               .WithMany();
+
+            modelBuilder.Seed();
+        }
     }
 }

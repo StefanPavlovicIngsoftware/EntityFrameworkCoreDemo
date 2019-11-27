@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Application;
+using Application.Interfaces;
+using Application.Services;
 using AutoMapper;
 using Infrastructure;
 using Microsoft.AspNetCore.Builder;
@@ -30,7 +32,10 @@ namespace API
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<ApplicationContext>(dc =>
-                dc.UseSqlServer(Configuration.GetConnectionString("EfCoreDemoDb")), ServiceLifetime.Scoped);
+                dc.UseSqlServer(Configuration.GetConnectionString("EfCoreDemoDb")), ServiceLifetime.Transient);
+
+            services.AddTransient<IUnitOfWork>(dc => dc.GetRequiredService<ApplicationContext>());
+            services.AddTransient<ICustomerService, CustomerService>();
 
             var mappingConfig = new MapperConfiguration(mc =>
             {
