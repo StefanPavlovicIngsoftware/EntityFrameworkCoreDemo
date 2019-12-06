@@ -5,26 +5,20 @@ using Microsoft.EntityFrameworkCore.Storage;
 
 namespace Infrastructure
 {
-    public class ApplicationContext : DbContext, IUnitOfWork
+    public class ApplicationContext : DbContext, IApplicationUnitOfWork
     {
         public DbSet<Customer> Customers { get; set; }
         public DbSet<Product> Products { get; set; }
         public DbSet<Order> Orders { get; set; }   
 
-        public ApplicationContext(DbContextOptions options)
+        public ApplicationContext(DbContextOptions<ApplicationContext> options)
             : base(options)
         {
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder) 
         {
-            modelBuilder.Entity<Order>()
-                .HasOne<Customer>()
-                .WithMany();
-
-            modelBuilder.Entity<Order>()
-               .HasOne<Product>()
-               .WithMany();
+            modelBuilder.HasDefaultSchema("Sales");
 
             modelBuilder.Seed();
         }

@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace Application.Interfaces
 {
-    public interface IUnitOfWork : 
+    public interface IApplicationUnitOfWork : 
         IDisposable,
         IInfrastructure<IServiceProvider>,
         IDbContextDependencies, 

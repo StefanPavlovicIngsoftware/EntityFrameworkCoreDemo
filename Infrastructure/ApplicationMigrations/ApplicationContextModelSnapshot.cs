@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
-namespace Infrastructure.Migrations
+namespace Infrastructure.ApplicationMigrations
 {
     [DbContext(typeof(ApplicationContext))]
     partial class ApplicationContextModelSnapshot : ModelSnapshot
@@ -15,9 +15,33 @@ namespace Infrastructure.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
+                .HasDefaultSchema("Sales")
                 .HasAnnotation("ProductVersion", "3.0.1")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+            modelBuilder.Entity("Domain.Entities.Contact", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("Address")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("CustomerId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("PhoneNumber")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CustomerId");
+
+                    b.ToTable("Contact");
+                });
 
             modelBuilder.Entity("Domain.Entities.Customer", b =>
                 {
@@ -32,6 +56,9 @@ namespace Infrastructure.Migrations
                     b.Property<string>("LastName")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<Guid>("UniqueIdentifier")
+                        .HasColumnType("uniqueidentifier");
+
                     b.HasKey("Id");
 
                     b.ToTable("Customers");
@@ -41,31 +68,36 @@ namespace Infrastructure.Migrations
                         {
                             Id = 1,
                             FirstName = "John",
-                            LastName = "Doe"
+                            LastName = "Doe",
+                            UniqueIdentifier = new Guid("00000000-0000-0000-0000-000000000000")
                         },
                         new
                         {
                             Id = 2,
                             FirstName = "John",
-                            LastName = "Public"
+                            LastName = "Public",
+                            UniqueIdentifier = new Guid("00000000-0000-0000-0000-000000000000")
                         },
                         new
                         {
                             Id = 3,
                             FirstName = "Richard",
-                            LastName = "Doe"
+                            LastName = "Doe",
+                            UniqueIdentifier = new Guid("00000000-0000-0000-0000-000000000000")
                         },
                         new
                         {
                             Id = 4,
                             FirstName = "Jane",
-                            LastName = "Doe"
+                            LastName = "Doe",
+                            UniqueIdentifier = new Guid("00000000-0000-0000-0000-000000000000")
                         },
                         new
                         {
                             Id = 5,
                             FirstName = "Johnny",
-                            LastName = "Doe"
+                            LastName = "Doe",
+                            UniqueIdentifier = new Guid("00000000-0000-0000-0000-000000000000")
                         });
                 });
 
@@ -76,7 +108,7 @@ namespace Infrastructure.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<int>("CustomerId")
+                    b.Property<int?>("CustomerId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("OrderDate")
@@ -85,7 +117,10 @@ namespace Infrastructure.Migrations
                     b.Property<decimal>("OrderPrice")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<int>("ProductId")
+                    b.Property<int?>("ProductId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Quantity")
                         .HasColumnType("int");
 
                     b.HasKey("OrderId");
@@ -110,24 +145,30 @@ namespace Infrastructure.Migrations
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(18,2)");
 
+                    b.Property<Guid>("UniqueIdentifier")
+                        .HasColumnType("uniqueidentifier");
+
                     b.HasKey("Id");
 
                     b.ToTable("Products");
                 });
 
+            modelBuilder.Entity("Domain.Entities.Contact", b =>
+                {
+                    b.HasOne("Domain.Entities.Customer", "Customer")
+                        .WithMany("Contacts")
+                        .HasForeignKey("CustomerId");
+                });
+
             modelBuilder.Entity("Domain.Entities.Order", b =>
                 {
-                    b.HasOne("Domain.Entities.Customer", null)
-                        .WithMany()
-                        .HasForeignKey("CustomerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.HasOne("Domain.Entities.Customer", "Customer")
+                        .WithMany("Orders")
+                        .HasForeignKey("CustomerId");
 
-                    b.HasOne("Domain.Entities.Product", null)
-                        .WithMany()
-                        .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.HasOne("Domain.Entities.Product", "Product")
+                        .WithMany("Orders")
+                        .HasForeignKey("ProductId");
                 });
 #pragma warning restore 612, 618
         }

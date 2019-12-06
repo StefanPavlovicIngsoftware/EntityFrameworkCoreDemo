@@ -1,16 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace Domain.Entities
 {
-    public class Customer
-    {
+    public class Product 
+    {    
         public int Id { get; set; }
         public Guid UniqueIdentifier { get; set; }
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
-        public virtual ICollection<Contact> Contacts { get; set; }
+        public string Name { get; set; }
+        public decimal Price { get; set; }
         public virtual ICollection<Order> Orders { get; set; }
     }
 }

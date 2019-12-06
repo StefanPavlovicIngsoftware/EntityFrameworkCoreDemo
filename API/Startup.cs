@@ -32,9 +32,12 @@ namespace API
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<ApplicationContext>(dc =>
+                dc.UseSqlServer(Configuration.GetConnectionString("EfCoreDemoDb")), ServiceLifetime.Transient);     
+            
+            services.AddDbContext<SupportContext>(dc =>
                 dc.UseSqlServer(Configuration.GetConnectionString("EfCoreDemoDb")), ServiceLifetime.Transient);
 
-            services.AddTransient<IUnitOfWork>(dc => dc.GetRequiredService<ApplicationContext>());
+            services.AddTransient<IApplicationUnitOfWork>(dc => dc.GetRequiredService<ApplicationContext>());
             services.AddTransient<ICustomerService, CustomerService>();
 
             var mappingConfig = new MapperConfiguration(mc =>

@@ -6,9 +6,9 @@ namespace Infrastructure.Configuration
 {
     public class ProductConfiguration : IEntityTypeConfiguration<Product>
     {
-        public void Configure(EntityTypeBuilder<Product> builder)
+        public void Configure(EntityTypeBuilder<Product> productEntity)
         {
-            builder.Property(p => p.Name)
+            productEntity.Property(p => p.Name)
                 .IsRequired()
                 .HasMaxLength(50);
         }

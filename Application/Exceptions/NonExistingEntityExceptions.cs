@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Application.Exceptions
 {
-    public class NonExistingEntityExceptions : Exception
+    public class NonExistingEntityException : Exception
     {
     }
 }

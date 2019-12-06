@@ -1,21 +1,24 @@
 ﻿using Application.DataTransferObjects;
 using Application.Exceptions;
 using Application.Interfaces;
+using Application.QueryObject;
 using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Application.Services
 {
     public class CustomerService : ICustomerService
     {
-        private readonly IUnitOfWork _unitOfWork;
+        private readonly IApplicationUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
 
         public CustomerService(
-            IUnitOfWork unitOfWork,
+            IApplicationUnitOfWork unitOfWork,
             IMapper mapper)
         {
             this._unitOfWork = unitOfWork;
@@ -32,10 +35,11 @@ namespace Application.Services
 
         public void DeleteCustomer(int customerId)
         {
-            var customer = _unitOfWork.Customers.SingleOrDefault(c => c.Id == customerId);
+            var customer = _unitOfWork.Customers
+                .SingleOrDefault(c => c.Id == customerId);
 
             if (customer == null)
-                throw new NonExistingEntityExceptions();
+                throw new NonExistingEntityException();
 
             _unitOfWork.Customers.Remove(customer);
             _unitOfWork.SaveChanges();
@@ -43,10 +47,11 @@ namespace Application.Services
 
         public CustomerDto GetCustomer(int customerId)
         {
-            var customer = _unitOfWork.Customers.SingleOrDefault(c => c.Id == customerId);
+            var customer = _unitOfWork.Customers
+                .SingleOrDefault(c => c.Id == customerId);
 
             if (customer == null)
-                throw new NonExistingEntityExceptions();
+                throw new NonExistingEntityException();
 
             return _mapper.Map<CustomerDto>(customer);
         }
@@ -55,10 +60,19 @@ namespace Application.Services
         {
             var domainCustomer = _mapper.Map<Customer>(customer);
 
-            _unitOfWork.Customers.Add(domainCustomer);
-            _unitOfWork.Entry(customer).State = EntityState.Modified;
+            _unitOfWork.Customers.Update(domainCustomer);
 
             _unitOfWork.SaveChanges();
+        }
+
+        public List<CustomerDto> GetCustomers(CustomerPaggingFilterDto dto)
+        {
+            return _unitOfWork.Customers
+                .OrderCustomersBy(dto.OrderBy, dto.OrderType)
+                .Skip(dto.Skip)
+                .Take(dto.Take)
+                .ProjectTo<CustomerDto>(_mapper.ConfigurationProvider)
+                .ToList();
         }
     }
 }

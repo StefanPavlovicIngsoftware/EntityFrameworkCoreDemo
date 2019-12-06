@@ -9,15 +9,18 @@ namespace Infrastructure.Configuration
 {
     class CustomerConfiguration : IEntityTypeConfiguration<Customer>
     {
-        public void Configure(EntityTypeBuilder<Customer> builder)
+        public void Configure(EntityTypeBuilder<Customer> customerEntity)
         {
-            builder.Property(c => c.FirstName)
+            customerEntity.HasMany(c => c.Contacts)
+                .WithOne(c => c.Customer);
+
+            customerEntity.Property(c => c.FirstName)
                 .IsRequired()
                 .HasMaxLength(30);
 
-            builder.Property(c => c.LastName)
-              .IsRequired()
-              .HasMaxLength(30);
+            customerEntity.Property(c => c.LastName)
+               .IsRequired()
+               .HasMaxLength(30);            
         }
     }
 }
